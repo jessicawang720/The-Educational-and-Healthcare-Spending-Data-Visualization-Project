@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		google.charts.load('current',{'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawAllSheets);
+		
+		function drawAllSheets() {
+			drawSheetName('TEE', 'SELECT L,M,N,O,P,Q,S',
+						  TotalEducationSpendingResponseHandler);
+			drawSheetName('THE', 'SELECT L,M,N,O,P,Q,S',
+						  TotalHealthcareSpendingResponseHandler);			  
+			drawSheetName('sharedofGDP_EE', 'SELECT B,C',
+						  sharedGDPEE2006ResponseHandler);	
+			drawSheetName('sharedofGDP_EE', 'SELECT B,G',
+						  sharedGDPEE2010ResponseHandler);	
+			drawSheetName('sharedofGDP_HE', 'SELECT B,C',
+						  sharedGDPHE2006ResponseHandler);	
+			drawSheetName('sharedofGDP_HE', 'SELECT B,G',
+						  sharedGDPHE2010ResponseHandler);	
+			drawSheetName('TEE', 'SELECT B, AB, Q',
+						  totalEducationSpendingtototalmilitaryspendingResponseHandler);
+			drawSheetName('THE', 'SELECT B, AA, Q',
+						  totalHealthcareSpendingtototalmilitaryspendingResponseHandler);
+			drawSheetName('EEpercapita', 'SELECT A, B, K',
+							  percapitaEduacationalSpendingtoGDPpercapita2006ResponseHandler);
+			drawSheetName('EEpercapita', 'SELECT A, F, O',
+							  percapitaEduacationalSpendingtoGDPpercapita2010ResponseHandler);
+			drawSheetName('HEpercapita', 'SELECT B, C, M',
+						  percapitaHealthcareSpendingtoGDPpercapita2006ResponseHandler);
+			drawSheetName('HEpercapita', 'SELECT B, G, Q',
+						  percapitaHealthcareSpendingtoGDPpercapita2010ResponseHandler);
+			drawSheetName('TEE', 'SELECT B, R',
+						  EducationSpendingfixedvalueResponseHandler);
+			drawSheetName('TEE', 'SELECT B, I',
+						  EducationSpendingpercentageResponseHandler);
+			drawSheetName('TEE', 'SELECT B, R',
+						  EducationSpendingfixedvalueResponseHandler2);			  
+			drawSheetName('THE', 'SELECT B, R',
+						  HealthcareSpendingfixedvalueResponseHandler2);
+			drawSheetName('THE', 'SELECT B, R',
+						  HealthcareSpendingfixedvalueResponseHandler);
+			drawSheetName('THE', 'SELECT B, I',
+						  HealthcareSpendingpercentageResponseHandler);
+		
+		} //drawAllSheets
+		
+		function drawSheetName(sheetName, query, responseHandler) {
+			var queryString = encodeURIComponent(query);
+			var query = new google.visualization.Query(
+				'https://docs.google.com/spreadsheets/d/1fH6kJrZou-1hDNLX_NNm1DLIxl0cJyQzw0_I_3EAbsI/gviz/tq?sheet=' 
+				+ sheetName + '&headers=1&tq=' + queryString);
+			query.send(responseHandler);
+		} //drawSheetName
+
+		function checkError(response) {
+			if (response.isError()) {
+				alert('Error in query: ' + response.getMessage() +
+					' ' + response.getDetailedMessage());
+				return;
+			}		
+		}
+		
+		function TotalEducationSpendingResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 5, desc:true});
+			
+			var options = {
+				  vAxis: {title: 'Spending in Billions ($)'},
+				  hAxis: {title: 'Country'},
+				  seriesType: 'bars',
+				  series: {5: {type: 'line'}}
+				};
+			
+			var chart = new google.visualization.ComboChart(document.getElementById('total_Education_spending_div'));
+			
+			chart.draw(data, options);
+		} //TotalEducationSpendingResponseHandler
+		
+		
+		
+		function TotalHealthcareSpendingResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 5, desc:true});
+			
+			var options = {
+				  vAxis: {title: 'Spending in Billions ($)'},
+				  hAxis: {title: 'Country'},
+				  seriesType: 'bars',
+				  series: {5: {type: 'line'}}
+				};
+			
+			var chart = new google.visualization.ComboChart(document.getElementById('total_healthcare_spending_div'));
+			
+			chart.draw(data, options);
+		} ///TotalHealthcareSpendingResponseHandler
+		
+		
+		
+		
+		function sharedGDPEE2010ResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+				height: 400,
+				legend: 'none',
+				bars: 'horizontal',
+				annotations: {alwaysOutside: true},
+				vAxis: {title: 'Country'},
+				hAxis: {title: 'Percentage %'}
+			};
+			
+			/* using a view */
+			var view = new google.visualization.DataView(data);
+			view.setColumns([0,1,
+					{ 
+						calc: function(dt, row) {
+		return Math.ceil(dt.getFormattedValue(row,1)) + '%';
+						},
+					sourceColumn: 1,
+					type: 'string',
+					role: 'annotation'
+					}]);
+			
+			var chart = new google.visualization.BarChart(
+						document.getElementById('top10Education2010_div'));
+			chart.draw(view, options); //change view to data for data
+			
+		} //sharedGDPEE2010ResponseHandler
+		
+		function sharedGDPEE2006ResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+				height: 400,
+				legend: 'none',
+				bars: 'horizontal',
+				annotations: {alwaysOutside: true},
+				vAxis: {title: 'Country'},
+				hAxis: {title: 'Percentage %'}
+			};
+			
+			/* using a view */
+			var view = new google.visualization.DataView(data);
+			view.setColumns([0,1,
+					{ 
+						calc: function(dt, row) {
+		return Math.ceil(dt.getFormattedValue(row,1)) + '%';
+						},
+					sourceColumn: 1,
+					type: 'string',
+					role: 'annotation'
+					}]);
+			
+			var chart = new google.visualization.BarChart(
+						document.getElementById('top10Education2006_div'));
+			chart.draw(view, options); //change view to data for data
+			
+		} //sharedGDPEE2006ResponseHandler
+	
+	
+	
+	
+	function sharedGDPHE2006ResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+
+			var options = {
+			  title: 'Top 10 by Healthcare Expenditure 2006 as % GDP',
+			  curveType: 'function',
+			  legend: { position: 'bottom' }
+			  
+			};
+
+			var chart = new google.visualization.LineChart(document.getElementById('top10healthcare2006_div'));
+
+			chart.draw(data, options);
+		  }//sharedGDPHE2006ResponseHandler
+	
+	function sharedGDPHE2010ResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+
+			var options = {
+			  title: 'Top 10 by Healthcare Expenditure 2010 as % GDP',
+			  curveType: 'function',
+			  legend: { position: 'bottom' }
+			};
+
+			var chart = new google.visualization.LineChart(document.getElementById('top10healthcare2010_div'));
+
+			chart.draw(data, options);
+		  }//sharedGDPHE2010ResponseHandler
+	
+	
+	function totalEducationSpendingtototalmilitaryspendingResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+			
+			var options = {
+				height: 400,
+				legend: 'none',
+				bars: 'horizontal',
+				isStacked: true,
+				annotations: {alwaysOutside: true},
+				title: 'Total Military Spending vs Total EducationSpending (2010)',
+				vAxis: {title: 'Country'},
+				hAxis: {title: 'Spending in Billions ($)'}
+			};
+			
+			var chart = new google.visualization.BarChart(
+				document.getElementById('totalEducationSpendingtototalmilitaryspending_div'));
+		
+			chart.draw(data, options);
+		} //totalEducationSpendingtototalmilitaryspendingResponseHandler
+
+		
+	function totalHealthcareSpendingtototalmilitaryspendingResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+			
+			var options = {
+				height: 400,
+				legend: 'none',
+				bars: 'horizontal',
+				isStacked: true,
+				annotations: {alwaysOutside: true},
+				title: 'Total Military Spending vs Total Healthcare Spending (2010)',
+				vAxis: {title: 'Country'},
+				hAxis: {title: 'Spending in Billions ($)'}
+			};
+			
+			var chart = new google.visualization.BarChart(
+				document.getElementById('totalHealthcareSpendingtototalmilitaryspending_div'));
+		
+			chart.draw(data, options);
+		} //totalHealthcareSpendingtototalmilitaryspendingResponseHandler
+	
+	
+		
+		function percapitaEduacationalSpendingtoGDPpercapita2006ResponseHandler(response) {
+				checkError(response);
+				var data = response.getDataTable();
+				data.sort({column: 1, desc: true});
+				
+				var options = {
+					height: 400,
+					legend: 'none',
+					bars: 'horizontal',
+					colors:['#f3f930','#d93f20'],
+					isStacked: true,
+					annotations: {alwaysOutside: true},
+					title: 'Per Capita Education Spending vs Per Capita GDP (2006)',
+					vAxis: {title: 'Country'},
+					hAxis: {title: 'Dollars'}
+				};
+				
+				var chart = new google.visualization.BarChart(
+					document.getElementById('percapitagdpEducationspending2006_div'));
+				
+				chart.draw(data, options);
+			} //percapitaEduacationalSpendingtoGDPpercapita2006ResponseHandler
+		
+	
+
+		function percapitaEduacationalSpendingtoGDPpercapita2010ResponseHandler(response) {
+				checkError(response);
+				var data = response.getDataTable();
+				data.sort({column: 1, desc: true});
+				
+				var options = {
+					height: 400,
+					legend: 'none',
+					bars: 'horizontal',
+					colors:['#f3f930','#d93f20'],
+					isStacked: true,
+					annotations: {alwaysOutside: true},
+					title: 'Per Capita Education Spending vs Per Capita GDP (2010)',
+					vAxis: {title: 'Country'},
+					hAxis: {title: 'Dollars'}
+				};
+				
+				var chart = new google.visualization.BarChart(
+					document.getElementById('percapitagdpEducationspending2010_div'));
+				
+				chart.draw(data, options);
+			} //percapitaEduacationalSpendingtoGDPpercapita2010ResponseHandler
+		
+		
+		function percapitaHealthcareSpendingtoGDPpercapita2006ResponseHandler(response) {
+				checkError(response);
+				var data = response.getDataTable();
+				data.sort({column: 2, desc: true});
+			
+			var options = {
+				height: 400,
+				title: 'Per Capita Healthcare Spending vs Per Capita GDP (2006)',
+				vAxis: {title: 'Dollars'},
+				hAxis: {title: 'Country'}
+			};
+
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('percapitagdpehealthcarespending2006_div'));
+				
+				chart.draw(data, options);
+			} //percapitaHealthcareSpendingtoGDPpercapita2006ResponseHandler
+			
+			
+			
+			
+		function percapitaHealthcareSpendingtoGDPpercapita2010ResponseHandler(response) {
+				checkError(response);
+				var data = response.getDataTable();
+				data.sort({column: 2, desc: true});
+			
+			var options = {
+				height: 400,
+				title: 'Per Capita Healthcare Spending vs Per Capita GDP (2010)',
+				vAxis: {title: 'Dollars'},
+				hAxis: {title: 'Country'}
+			};
+
+			var chart = new google.visualization.ColumnChart(
+				document.getElementById('percapitagdpehealthcarespending2010_div'));
+				
+				chart.draw(data, options);
+			} //percapitaHealthcareSpendingtoGDPpercapita2010ResponseHandler
+			
+		function EducationSpendingfixedvalueResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#f1f09c','#76750a']}, //orange to blue
+				title: 'Top 10 Countries Fixed Value by Education Spending during 2006-2010 (US Billions $)'
+			};
+			
+			var chart = new google.visualization.GeoChart(
+					document.getElementById('EducationSpendingfixedvalue_div'));
+			
+			chart.draw(data, options);
+			
+		} //EducationSpendingfixedvalueResponseHandler
+		
+		function EducationSpendingpercentageResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column: 1, desc: true});
+			
+			var chart = new google.visualization.GeoChart(
+					document.getElementById('EducationSpendingpercentage_div'));
+		
+			chart.draw(data, {height: 400});
+		} //EducationSpendingpercentageResponseHandler
+		
+		
+		function EducationSpendingfixedvalueResponseHandler2(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+			  title: 'Education Spending Fixed Value in 2006-2010 (US Billions $)',
+			  is3D: true,
+			};
+
+			var chart = new google.visualization.PieChart(document.getElementById('fixedvaluepiechart_3d'));
+			chart.draw(data, options);
+			}//EducationSpendingfixedvalueResponseHandler2
+			
+			
+		function HealthcareSpendingfixedvalueResponseHandler2(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+			  title: 'Healthcare Spending Fixed Value in 2006-2010 (US Billions $)',
+			  is3D: true,
+			};
+
+			var chart = new google.visualization.PieChart(document.getElementById('fixedvaluepiechart2_3d'));
+			chart.draw(data, options);
+			}//HealthcareSpendingfixedvalueResponseHandler2
+		
+		
+		function HealthcareSpendingfixedvalueResponseHandler(response) {
+			checkError(response);
+			var data = response.getDataTable();
+			data.sort({column:1, desc:true});
+			
+			var options = {
+				height: 400,
+				colorAxis: {colors: ['#f56c50','#6d1d0d']}, 
+				title: 'Top 10 Countries Fixed Value by Healthcare Spending during 2006-2010 (US Billions $)'
+			};
+			
+			var chart = new google.visualization.GeoChart(
+					document.getElementById('HealthcareSpendingfixedvalue_div'));
+			
+			chart.draw(data, options);
+			
+		} //HealthcareSpendingfixedvalueResponseHandler
+		
+		
+		
+		function HealthcareSpendingpercentageResponseHandler(response) {
+				checkError(response);
+				var data = response.getDataTable();
+				data.sort({column: 1, desc: true});
+				
+				var chart = new google.visualization.GeoChart(
+						document.getElementById('HealthcareSpendingpercentage_div'));
+			
+				chart.draw(data, {height: 400});
+			} //HealthcareSpendingpercentageResponseHandler	
+	
+	</script>
+</head>
+<br></br>
+<body>
+	<center><h2>Education Spending Analysis for Top 10 G20 Countries</h2></center>
+	<center><div id="total_Education_spending_div" style="width:1000px; height:500px;" ></div></center>
+	<center><h2>Healthcare Spending Analysis for Top 10 G20 Countries</h2></center>
+	<center><div  id="total_healthcare_spending_div" style="width:1000px; height:500px;"></div></center>
+	<br></br>
+	<br></br>
+	<table align="center">
+		<tr>
+			<th>Top 10 by Education Expenditures 2006 as % of GDP</th>
+			<th>Top 10 by Education Expenditures 2010 as % of GDP</th>
+		</tr>
+		<tr>
+			<td><div id="top10Education2006_div" style="width:500px"></div></td>
+			<td><div id="top10Education2010_div" style="width:500px"></div></td>
+		</tr>
+	</table>
+
+	
+	<div  id="top10healthcare2006_div" style="width: 1000px; height: 500px""></div>
+	<div  id="top10healthcare2010_div" style="width: 1000px; height: 500px""></div>
+		
+	<div id="totalEducationSpendingtototalmilitaryspending_div" 
+		 style="width:900px; height:500px"></div>
+		 
+	<div id="totalHealthcareSpendingtototalmilitaryspending_div" 
+	     style="width:900px; height:500px"></div>	
+	<div id="percapitagdpEducationspending2006_div" 
+	     style="width:900px; height:500px"></div>	
+	<div id="percapitagdpEducationspending2010_div" 
+	     style="width:900px; height:500px"></div>	
+	<div id="percapitagdpehealthcarespending2006_div" 
+	     style="width:900px; height:500px"></div>	
+	<div id="percapitagdpehealthcarespending2010_div" 
+	     style="width:900px; height:500px"></div>	
+		 	 
+	<table align="center">
+		<tr>
+			<th>Top 10 Countries Fixed Value by Education Spending in 2006-2010 (US Billions $)</th>
+			<th>Top 10 by Education Spending Growth Rate in 2006-2010(%) </th>
+		</tr>
+		<tr>
+			<td><div id="EducationSpendingfixedvalue_div" style="width:500px"></div></td>
+			<td><div id="EducationSpendingpercentage_div" style="width:500px"></div></td>
+		</tr>
+	</table>
+	<br></br>
+	<br></br>
+	<table align="center">
+		<tr>
+			<td><div id="fixedvaluepiechart_3d" style="width: 700px; height: 500px;"></div>
+			<td><div id="fixedvaluepiechart2_3d" style="width: 700px; height: 500px;"></div>
+		</tr>
+	</table>
+	
+	<table align="center">
+			<tr>
+				<th>Top 10 Countries Fixed Value by Healthcare Spending during 2006-2010 (US Billions $)</th>
+				<th>Top 10 by Healthcare Spending Growth Rate in 2006-2010(%)</th>
+			</tr>
+			<tr>
+				<td><div id="HealthcareSpendingfixedvalue_div" style="width:500px"></div></td>
+				<td><div id="HealthcareSpendingpercentage_div" style="width:500px"></div></td>
+			</tr>
+	</table>		 
+</body>
+</html>
